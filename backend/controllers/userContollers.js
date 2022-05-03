@@ -8,8 +8,7 @@ import User from '../models/userModel.js';
 // Generate access json web token
 const generateAccessToken = (id) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET_ACCESS_TOKEN, {
-		//The below has been changed from expiring in 7d
-		expiresIn: '5m',
+		expiresIn: '10s',
 	});
 };
 
@@ -56,14 +55,14 @@ const loginUser = asyncHandler(async (req, res, next) => {
 			signed: true,
 			httpOnly: true,
 			sameSite: 'strict',
-			// TODO: secure: true ---------->>>>> This will need to be enable before deployment.
+			// TODO: secure: true ---------->>>>> This will need to be enabled before deployment.
 		});
 
 		res.cookie('userFingerprint', jwtRandomString, {
 			maxAge: 86400000, // This is one day in milliseconds
 			httpOnly: true,
 			sameSite: 'strict',
-			// TODO: secure: true ---------->>>>> This will need to be enable before deployment.
+			// TODO: secure: true ---------->>>>> This will need to be enabled before deployment.
 		});
 
 		res.status(201).json({

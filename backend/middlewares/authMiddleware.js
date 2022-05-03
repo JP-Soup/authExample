@@ -5,7 +5,6 @@ import User from '../models/userModel.js';
 
 const routeAuthorization = asyncHandler(async (req, res, next) => {
 	const { access } = req.body;
-
 	try {
 		// Verify access token
 		const decodedAccess = jwt.verify(access, process.env.JWT_SECRET_ACCESS_TOKEN);

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import cookieParser from 'cookie-parser';
 import { useDispatch } from 'react-redux';
 
 const API_LOGIN_URL = '/api/users/login';
@@ -18,8 +19,6 @@ const login = async (userData) => {
 };
 
 const getMe = async (authData) => {
-	console.log(authData);
-
 	const { accessToken, fingerprint } = authData;
 
 	// POST @ '/api/users/me' with access token attached
@@ -37,6 +36,9 @@ const getNewAccess = async (token) => {
 	const response = await axios.post(API_NEW_ACCESS_URL, {
 		refreshToken: token,
 	});
+
+	//Remove unload from session storage
+	sessionStorage.removeItem('unLoaded');
 
 	// Return new access token
 	const newAccessToken = response.data;

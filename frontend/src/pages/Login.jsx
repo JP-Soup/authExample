@@ -2,18 +2,11 @@ import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { login, reset } from '../features/auth/authSlice';
+import { login } from '../features/auth/authSlice';
 import Spinner from '../components/Spinner';
 
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Box from '@mui/material/Box';
+import { Avatar, Button, CssBaseline, TextField, Link, Box, Typography, Container } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function Copyright(props) {
@@ -35,7 +28,7 @@ const Login = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
-	const { accessToken, isLoading, isSuccess, isError, message } = useSelector((state) => state.auth);
+	const { accessToken, isLoggedIn, isLoading, isSuccess, isError, message } = useSelector((state) => state.auth);
 
 	useEffect(() => {
 		if (isError) {
@@ -43,11 +36,10 @@ const Login = () => {
 		}
 
 		//Redirect when logged in
-		if (isSuccess || accessToken) {
+		if (accessToken && isLoggedIn) {
 			navigate('/home');
 		}
-		dispatch(reset());
-	}, [isError, isSuccess, accessToken, message, navigate, dispatch]);
+	}, [isError, isLoggedIn, isSuccess, accessToken, message, navigate, dispatch]);
 
 	const onSubmit = (e) => {
 		e.preventDefault();
@@ -72,7 +64,7 @@ const Login = () => {
 				<CssBaseline />
 				<Box
 					sx={{
-						marginTop: 8,
+						marginTop: 28,
 						display: 'flex',
 						flexDirection: 'column',
 						alignItems: 'center',

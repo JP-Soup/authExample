@@ -2,18 +2,44 @@ import { useEffect } from 'react';
 import '../scss/_profile.scss';
 import { toast } from 'react-toastify';
 import Spinner from '../components/Spinner';
+import profile from '../img/profile.png';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { getMe, getNewAccessToken } from '../features/auth/authSlice';
+import { useNavigate } from 'react-router-dom';
+import { getMe, getNewAccessToken, logout } from '../features/auth/authSlice';
+import { Button, Card, CardActions, CardContent, CardMedia, Typography } from '@mui/material';
 
 const Profile = () => {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
-	const { user, accessToken, isLoading, cookieError, isError, secondAuthError, isLoggedIn, message } = useSelector((state) => state.auth);
+	const { user, accessToken, isLoading, cookieError, isError, newAccess, secondAuthError, isLoggedIn, message } = useSelector((state) => state.auth);
+
+	// Listen for page refresh (unload)
+	window.addEventListener('unload', function () {
+		sessionStorage.setItem('unLoaded', true);
+	});
+
+	// If unloaded in sessionStorage, check for fingerprint and refresh token, return new access token
+	useEffect(() => {
+		const unLoaded = sessionStorage.getItem('unLoaded');
+
+		if (unLoaded) {
+			const isRefreshToken = sessionStorage.getItem('refreshToken');
+			const isFingerprint = sessionStorage.getItem('fingerprint');
+
+			if (isRefreshToken && isFingerprint) {
+				const token = {
+					refreshToken: isRefreshToken,
+				};
+
+				dispatch(getNewAccessToken(token));
+			}
+		}
+	}, [dispatch]);
 
 	useEffect(() => {
-		// First check of access token
-		if (accessToken && isLoggedIn) {
+		if (accessToken && isLoggedIn && !user) {
 			const fingerprint = sessionStorage.getItem('fingerprint');
 
 			const authData = {
@@ -21,15 +47,20 @@ const Profile = () => {
 				fingerprint,
 			};
 
-			// Provide access token for first verfication by routeAuthorization middleware
+			// Provide access token for first verfication by routeAuthorization Middleware
 			dispatch(getMe(authData));
 		}
 
-		// If cookie authentication fails
-		if (cookieError) {
-			toast.error(message);
-			sessionStorage.removeItem('refreshToken');
-			sessionStorage.removeItem('fingerprint');
+		if (newAccess && accessToken) {
+			const fingerprint = sessionStorage.getItem('fingerprint');
+
+			const authData = {
+				accessToken,
+				fingerprint,
+			};
+
+			// Provide access token for verfication by routeAuthorization Middleware
+			dispatch(getMe(authData));
 		}
 
 		// If error is returned from first verification of access token, verify refresh token and issue new access token
@@ -43,16 +74,22 @@ const Profile = () => {
 			dispatch(getNewAccessToken(token));
 		}
 
-		// If refresh token verification fails, return error and remove refresh token // from session storage
+		// If refresh token verification fails, return error and remove refresh token and fingerprint from session storage
 		if (isError && secondAuthError) {
 			toast.error(message);
 			sessionStorage.removeItem('refreshToken');
+			sessionStorage.removeItem('fingerprint');
 		}
+	}, [newAccess, user, isError, secondAuthError, cookieError, accessToken, isLoggedIn, message, dispatch]);
 
-		// if (!isLoggedIn) {
-		// 	dispatch(reset());
-		// }
-	}, [isError, secondAuthError, cookieError, accessToken, isLoggedIn, message, dispatch]);
+	const onNavigateHome = () => {
+		navigate('/home');
+	};
+
+	const onLogout = async () => {
+		await dispatch(logout());
+		navigate('/');
+	};
 
 	if (isLoading) {
 		return <Spinner />;
@@ -60,18 +97,31 @@ const Profile = () => {
 
 	return (
 		<section className='profile-container'>
-			<h1>Profile Page</h1>
-
-			<div className='profile-container_left'>
-				<div className='profile-container_left-namecontainer'>
-					<h3 className='profile-container_left-namecontainer_title'>Name</h3>
-					<div className='profile-container_left-namecontainer_name'>{user ? user.name : ''}</div>
-				</div>
-				<div className='profile-container_left-emailcontainer'>
-					<h3 className='profile-container_left-emailcontainer_title'>Email</h3>
-					<div className='profile-container_left-emailcontainer_email'>{user ? user.email : ''}</div>
-				</div>
-			</div>
+			<Card sx={{ maxWidth: 345 }}>
+				<CardMedia component='img' height='320' width='' image={profile} alt='man at desk' />
+				<CardContent>
+					<Typography gutterBottom variant='h6' component='div'>
+						Signed in as:
+					</Typography>
+					<Typography gutterBottom variant='p' component='div'>
+						{user ? user.name : 'Username'}
+					</Typography>
+					<Typography gutterBottom variant='h6' component='div'>
+						Email Address:
+					</Typography>
+					<Typography gutterBottom variant='p' component='div'>
+						{user ? user.email : 'Please provide email address'}
+					</Typography>
+				</CardContent>
+				<CardActions>
+					<Button variant='contained' size='medium' onClick={onNavigateHome}>
+						Back to Home
+					</Button>
+					<Button variant='contained' size='medium' color='error' onClick={onLogout}>
+						Logout
+					</Button>
+				</CardActions>
+			</Card>
 		</section>
 	);
 };
