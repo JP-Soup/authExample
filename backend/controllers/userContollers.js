@@ -8,6 +8,7 @@ import User from '../models/userModel.js';
 // Generate access json web token
 const generateAccessToken = (id) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET_ACCESS_TOKEN, {
+		//TODO: Change this to 1m
 		expiresIn: '10s',
 	});
 };

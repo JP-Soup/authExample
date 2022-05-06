@@ -1,19 +1,31 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { login } from '../features/auth/authSlice';
+import { login, resetError } from '../features/auth/authSlice';
 import Spinner from '../components/Spinner';
 
-import { Avatar, Button, CssBaseline, TextField, Link, Box, Typography, Container } from '@mui/material';
+import { Avatar, Button, CssBaseline, TextField, Link, Box, Typography, Container, Modal } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const modalStyle = {
+	position: 'absolute',
+	top: '50%',
+	left: '50%',
+	transform: 'translate(-50%, -50%)',
+	width: 400,
+	border: 'none',
+	bgcolor: 'background.paper',
+	boxShadow: 30,
+	p: 4,
+};
 
 function Copyright(props) {
 	return (
 		<Typography variant='body2' color='text.secondary' align='center' {...props}>
 			{'Copyright © '}
-			<Link color='inherit' href='https://github.com/JP-Soup'>
+			<Link color='inherit' href='https://github.com/JP-Soup' underline='hover' target='_blank' rel='noreferrer'>
 				Soup
 			</Link>{' '}
 			{new Date().getFullYear()}
@@ -25,14 +37,27 @@ function Copyright(props) {
 const theme = createTheme();
 
 const Login = () => {
+	// Set modal controls
+	const [modalOpen, setModalOpen] = useState(false);
+
+	const handleOpen = () => setModalOpen(true);
+	const handleClose = () => setModalOpen(false);
+
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
 	const { accessToken, isLoggedIn, isLoading, isSuccess, isError, message } = useSelector((state) => state.auth);
 
 	useEffect(() => {
+		// Open the Cookie Policy Modal
+		handleOpen();
+
+		//This is resets session storage
+		sessionStorage.removeItem('window_refresh');
+
 		if (isError) {
 			toast.error(message);
+			dispatch(resetError());
 		}
 
 		//Redirect when logged in
@@ -60,6 +85,19 @@ const Login = () => {
 
 	return (
 		<ThemeProvider theme={theme}>
+			<Modal open={modalOpen} onClose={handleClose} aria-labelledby='modal-modal-title' aria-describedby='modal-modal-description'>
+				<Box sx={modalStyle}>
+					<Typography id='modal-modal-title' variant='h6' component='h2'>
+						Cookie Policy
+					</Typography>
+					//TODO: Make the below text better, more professional sounding
+					<Typography id='modal-modal-description' sx={{ mt: 2 }}>
+						This application uses cookies, please close this page now if you do not agree to allow the application to set cookies in your browser. All cookies have an expire time of 24 hours and will be removed from your browser upon
+						expiry, should you continue using the application.
+					</Typography>
+				</Box>
+			</Modal>
+
 			<Container component='main' maxWidth='xs'>
 				<CssBaseline />
 				<Box

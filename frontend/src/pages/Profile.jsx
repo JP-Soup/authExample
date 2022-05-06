@@ -6,39 +6,42 @@ import profile from '../img/profile.png';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getMe, getNewAccessToken, logout } from '../features/auth/authSlice';
+import { getMe, getNewAccessToken, logout, resetSecondAuthError, reset } from '../features/auth/authSlice';
 import { Button, Card, CardActions, CardContent, CardMedia, Typography } from '@mui/material';
 
 const Profile = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
+	const errorMsg = 'Invalid user credentials';
+
 	const { user, accessToken, isLoading, cookieError, isError, newAccess, secondAuthError, isLoggedIn, message } = useSelector((state) => state.auth);
 
-	// Listen for page refresh (unload)
-	window.addEventListener('unload', function () {
-		sessionStorage.setItem('unLoaded', true);
-	});
-
-	// If unloaded in sessionStorage, check for fingerprint and refresh token, return new access token
+	// If F5 event occurs, set 'window_refresh' item in session storage
 	useEffect(() => {
-		const unLoaded = sessionStorage.getItem('unLoaded');
+		window.onbeforeunload = function () {
+			sessionStorage.setItem('window_refresh', true);
+		};
 
-		if (unLoaded) {
-			const isRefreshToken = sessionStorage.getItem('refreshToken');
-			const isFingerprint = sessionStorage.getItem('fingerprint');
+		return () => {
+			window.onbeforeunload = null;
+		};
+	}, []);
 
-			if (isRefreshToken && isFingerprint) {
-				const token = {
-					refreshToken: isRefreshToken,
-				};
+	useEffect(() => {
+		const windowRefresh = sessionStorage.getItem('window_refresh');
 
-				dispatch(getNewAccessToken(token));
-			}
+		if (windowRefresh) {
+			const refreshToken = sessionStorage.getItem('refreshToken');
+
+			const token = {
+				refreshToken: refreshToken,
+			};
+			dispatch(getNewAccessToken(token));
+
+			sessionStorage.removeItem('window_refresh');
 		}
-	}, [dispatch]);
 
-	useEffect(() => {
 		if (accessToken && isLoggedIn && !user) {
 			const fingerprint = sessionStorage.getItem('fingerprint');
 
@@ -64,28 +67,37 @@ const Profile = () => {
 		}
 
 		// If error is returned from first verification of access token, verify refresh token and issue new access token
-		if (isError) {
+		if (isError && message !== errorMsg) {
 			const refreshToken = sessionStorage.getItem('refreshToken');
 
 			const token = {
 				refreshToken: refreshToken,
 			};
-
 			dispatch(getNewAccessToken(token));
 		}
 
-		// If refresh token verification fails, return error and remove refresh token and fingerprint from session storage
-		if (isError && secondAuthError) {
+		//If error message is 'Validation Error' navigate to sign-in page
+		if (message === errorMsg) {
+			toast.error();
+			dispatch(logout());
+			navigate('/');
+		}
+
+		// If refresh token verification fails, return error and remove refresh token and fingerprint from session storage and provide an error message to user
+		if (secondAuthError) {
 			toast.error(message);
 			sessionStorage.removeItem('refreshToken');
 			sessionStorage.removeItem('fingerprint');
+			navigate('/');
+			dispatch(resetSecondAuthError());
 		}
-	}, [newAccess, user, isError, secondAuthError, cookieError, accessToken, isLoggedIn, message, dispatch]);
+	}, [newAccess, user, isError, secondAuthError, cookieError, accessToken, isLoggedIn, message, navigate, dispatch]);
 
 	const onNavigateHome = () => {
 		navigate('/home');
 	};
 
+	//TODO: Is the async/await necessary?
 	const onLogout = async () => {
 		await dispatch(logout());
 		navigate('/');
@@ -97,9 +109,9 @@ const Profile = () => {
 
 	return (
 		<section className='profile-container'>
-			<Card sx={{ maxWidth: 345 }}>
+			<Card sx={{ maxWidth: 345 }} id='card-container'>
 				<CardMedia component='img' height='320' width='' image={profile} alt='man at desk' />
-				<CardContent>
+				<CardContent className='content'>
 					<Typography gutterBottom variant='h6' component='div'>
 						Signed in as:
 					</Typography>
@@ -113,7 +125,7 @@ const Profile = () => {
 						{user ? user.email : 'Please provide email address'}
 					</Typography>
 				</CardContent>
-				<CardActions>
+				<CardActions className='buttons'>
 					<Button variant='contained' size='medium' onClick={onNavigateHome}>
 						Back to Home
 					</Button>

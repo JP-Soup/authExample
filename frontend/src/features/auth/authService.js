@@ -28,6 +28,7 @@ const getMe = async (authData) => {
 	});
 
 	const user = response.data;
+
 	return user;
 };
 

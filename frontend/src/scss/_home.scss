@@ -4,7 +4,7 @@ body {
 	background-color: rgb(238, 238, 238);
 }
 
-.profile-container {
+.home-container {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -13,9 +13,11 @@ body {
 	height: 100vh;
 	width: auto;
 
-	background-color: rgb(238, 238, 238);
-	font-family: 'Itim', cursive;
+	background-color: rgb(244, 244, 244);
+	font-family: 'Manrope', cursive;
 	letter-spacing: 0.1rem;
+
+	animation: fade-in 0.4s ease-in 1 normal none;
 }
 
 .success {
@@ -28,4 +30,13 @@ body {
 
 .home-img {
 	max-width: 600px;
+}
+
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
 }

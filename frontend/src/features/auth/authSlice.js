@@ -63,9 +63,21 @@ export const authSlice = createSlice({
 	reducers: {
 		reset: (state) => {
 			state.user = null;
+			state.accessToken = '';
+			state.isLoggedIn = false;
 			state.isLoading = false;
 			state.isSuccess = false;
 			state.isError = false;
+			state.newAccess = false;
+			state.cookieError = false;
+			state.secondAuthError = false;
+			state.message = '';
+		},
+		resetError: (state) => {
+			state.isError = false;
+			state.message = '';
+		},
+		resetSecondAuthError: (state) => {
 			state.secondAuthError = false;
 			state.message = '';
 		},
@@ -122,7 +134,7 @@ export const authSlice = createSlice({
 				state.accessToken = '';
 				state.isLoggedIn = false;
 				state.isLoading = false;
-				state.isError = true;
+				state.isError = false;
 				state.secondAuthError = true;
 				state.message = action.payload;
 			})
@@ -135,5 +147,5 @@ export const authSlice = createSlice({
 	},
 });
 
-export const { reset } = authSlice.actions;
+export const { reset, resetError, resetSecondAuthError } = authSlice.actions;
 export default authSlice.reducer;

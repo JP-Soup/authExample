@@ -1,3 +1,43 @@
 .profile-container {
-	font-family: 'Manrope', sans-serif;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	height: 100vh;
+	width: auto;
+
+	background-color: rgb(244, 244, 244);
+	font-family: 'Manrope', cursive;
+	letter-spacing: 0.1rem;
+}
+
+#card-container {
+	box-shadow: 8px 8px 5px rgb(152, 152, 152);
+	animation: fade-in 0.4s ease-in 1 normal none;
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.buttons {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	align-items: center;
+
+	margin-bottom: 1rem;
+}
+
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
 }

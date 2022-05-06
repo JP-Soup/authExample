@@ -11,7 +11,7 @@ const Home = () => {
 	};
 
 	return (
-		<section className='profile-container'>
+		<section className='home-container'>
 			<img className='home-img' src={home} alt='man' />
 			<h1 className='success'>Login Successful 🔥</h1>
 			<br />

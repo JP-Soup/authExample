@@ -37,11 +37,15 @@ const validateCookie = asyncHandler(async (req, res, next) => {
 		// Verify fingerprint from session storage with secret
 		const decodedFingerprint = jwt.verify(fingerprint, process.env.JWT_SECRET_COOKIE_TOKEN);
 
-		// Throw an error if the fingerprints do not match else call next
-		hashedFingerprint === decodedFingerprint.id ? next() : new Error('Invalid Credentials');
+		// Throw an error if the fingerprints do not match
+		if (hashedFingerprint !== decodedFingerprint.id) {
+			throw new Error();
+		}
+
+		next();
 	} catch (err) {
 		res.status(401);
-		throw new Error('Unable to confirm credentials, please login');
+		throw new Error('Invalid user credentials');
 	}
 });
 
