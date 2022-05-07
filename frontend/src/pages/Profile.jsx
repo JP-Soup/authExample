@@ -6,7 +6,7 @@ import profile from '../img/profile.png';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { getMe, getNewAccessToken, logout, resetSecondAuthError, reset } from '../features/auth/authSlice';
+import { getMe, getNewAccessToken, logout, resetSecondAuthError } from '../features/auth/authSlice';
 import { Button, Card, CardActions, CardContent, CardMedia, Typography } from '@mui/material';
 
 const Profile = () => {
@@ -97,6 +97,10 @@ const Profile = () => {
 		navigate('/home');
 	};
 
+	const onNavigateSignIn = () => {
+		navigate('/');
+	};
+
 	//TODO: Is the async/await necessary?
 	const onLogout = async () => {
 		await dispatch(logout());
@@ -116,22 +120,30 @@ const Profile = () => {
 						Signed in as:
 					</Typography>
 					<Typography gutterBottom variant='p' component='div'>
-						{user ? user.name : 'Username'}
+						{user ? user.name : 'User not signed in'}
 					</Typography>
 					<Typography gutterBottom variant='h6' component='div'>
 						Email Address:
 					</Typography>
 					<Typography gutterBottom variant='p' component='div'>
-						{user ? user.email : 'Please provide email address'}
+						{user ? user.email : 'User has not provided email'}
 					</Typography>
 				</CardContent>
 				<CardActions className='buttons'>
-					<Button variant='contained' size='medium' onClick={onNavigateHome}>
-						Back to Home
-					</Button>
-					<Button variant='contained' size='medium' color='error' onClick={onLogout}>
-						Logout
-					</Button>
+					{user ? (
+						<>
+							<Button variant='contained' size='medium' onClick={onNavigateHome}>
+								Back to Home
+							</Button>
+							<Button variant='contained' size='medium' color='error' onClick={onLogout}>
+								Logout
+							</Button>
+						</>
+					) : (
+						<Button variant='contained' size='medium' onClick={onNavigateSignIn}>
+							Sign In
+						</Button>
+					)}
 				</CardActions>
 			</Card>
 		</section>
