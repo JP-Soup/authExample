@@ -57,7 +57,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
 			httpOnly: true,
 			sameSite: 'strict',
 			//The below secure should be enabled for deployment
-			secure: true,
+			// secure: true,
 		});
 
 		res.cookie('userFingerprint', jwtRandomString, {
@@ -65,7 +65,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
 			httpOnly: true,
 			sameSite: 'strict',
 			//The below secure should be enabled for deployment
-			secure: true,
+			// secure: true,
 		});
 
 		res.status(201).json({
