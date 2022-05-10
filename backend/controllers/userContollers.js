@@ -123,7 +123,7 @@ const getNewAccess = asyncHandler(async (req, res) => {
 		}
 	} catch (err) {
 		res.status(401);
-		throw new Error('Please login to continue using shopit');
+		throw new Error('Please login to continue using this application');
 	}
 });
 
