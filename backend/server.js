@@ -1,4 +1,6 @@
 import path from 'path';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import express from 'express';
 import colors from 'colors';
 import dotenv from 'dotenv';
@@ -28,6 +30,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/api/users', userRoutes);
 
 //Serve Frontend
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 if (process.env.NODE_ENV === 'production') {
 	// Set build folder as static
 	app.use(express.static(path.join(__dirname, '../frontend/build')));
