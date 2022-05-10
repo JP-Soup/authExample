@@ -1,6 +1,4 @@
 import axios from 'axios';
-import cookieParser from 'cookie-parser';
-import { useDispatch } from 'react-redux';
 
 const API_LOGIN_URL = '/api/users/login';
 const API_PROFILE_URL = '/api/users/me';
@@ -38,7 +36,7 @@ const getNewAccess = async (token) => {
 		refreshToken: token,
 	});
 
-	//Remove unload from session storage
+	//Remove unloaded from session storage
 	sessionStorage.removeItem('unLoaded');
 
 	// Return new access token

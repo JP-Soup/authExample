@@ -19,7 +19,7 @@
 	"bugs": {
 		"url": "https://github.com/JP-Soup/authExample/issues"
 	},
-	"homepage": "https://github.com/JP-Soup/authExample#readme",
+	"homepage": "https://github.com/JP-Soup/authExample",
 	"dependencies": {
 		"bcryptjs": "^2.4.3",
 		"colors": "^1.4.0",

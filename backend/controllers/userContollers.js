@@ -8,8 +8,7 @@ import User from '../models/userModel.js';
 // Generate access json web token
 const generateAccessToken = (id) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET_ACCESS_TOKEN, {
-		//TODO: Change this to 1m
-		expiresIn: '10s',
+		expiresIn: '1m',
 	});
 };
 
@@ -27,13 +26,13 @@ const generateFingerprint = (id) => {
 	});
 };
 
-// @desc    Login a new user
+// @desc    Login user
 // @route   /api/users/login
 // @access  Public
 const loginUser = asyncHandler(async (req, res, next) => {
 	const { email, password } = req.body;
 
-	// Authenticate that user exists in db
+	// Authenticate user exists in db
 	const user = await User.findOne({ email });
 
 	// Check user and passwords match
@@ -51,19 +50,22 @@ const loginUser = asyncHandler(async (req, res, next) => {
 		const jwtAccess = generateAccessToken(user._id);
 		const jwtRefresh = generateRefreshToken(user._id);
 
+		// session_id is provided for example purposes
 		res.cookie('session_id', process.env.SESSION_COOKIE_ID, {
 			maxAge: 86400000, // This is one day in milliseconds
 			signed: true,
 			httpOnly: true,
 			sameSite: 'strict',
-			// TODO: secure: true ---------->>>>> This will need to be enabled before deployment.
+			//The below secure should be enabled for deployment
+			secure: true,
 		});
 
 		res.cookie('userFingerprint', jwtRandomString, {
 			maxAge: 86400000, // This is one day in milliseconds
 			httpOnly: true,
 			sameSite: 'strict',
-			// TODO: secure: true ---------->>>>> This will need to be enabled before deployment.
+			//The below secure should be enabled for deployment
+			secure: true,
 		});
 
 		res.status(201).json({
@@ -85,7 +87,7 @@ const getMe = asyncHandler(async (req, res) => {
 	// Pull the user off the request
 	const user = req.user;
 
-	// Respond with user details, which will update getMe state in RTK
+	// Respond with user details
 	if (user) {
 		res.status(201).json({
 			name: user.name,

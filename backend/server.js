@@ -18,8 +18,7 @@ connectDB();
 
 const app = express();
 
-// TODO: This secret is for signed cookies, may need reviewing
-app.use(cookieParser('VERY SECRET'));
+app.use(cookieParser(process.env.SESSION_COOKIE_SECRET));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

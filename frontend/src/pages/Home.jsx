@@ -21,7 +21,7 @@ const Home = () => {
 		<section className='home-container'>
 			{accessToken && isLoggedIn ? (
 				<>
-					<img className='home-img' src={home} alt='man' />
+					<img className='home-img' src={home} alt='success mountain' />
 					<h1 className='success'>Sign in Successful 🔥</h1>
 					<br />
 					<Button variant='contained' color='success' size='large' onClick={onClick}>

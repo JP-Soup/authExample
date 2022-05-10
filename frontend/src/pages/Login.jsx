@@ -39,7 +39,6 @@ const theme = createTheme();
 const Login = () => {
 	// Set modal controls
 	const [modalOpen, setModalOpen] = useState(false);
-
 	const handleOpen = () => setModalOpen(true);
 	const handleClose = () => setModalOpen(false);
 
@@ -52,7 +51,7 @@ const Login = () => {
 		// Open the Cookie Policy Modal
 		handleOpen();
 
-		//This is resets session storage
+		//This resets session storage
 		sessionStorage.removeItem('window_refresh');
 
 		if (isError) {
@@ -90,10 +89,12 @@ const Login = () => {
 					<Typography id='modal-modal-title' variant='h6' component='h2'>
 						Cookie Policy
 					</Typography>
-					//TODO: Make the below text better, more professional sounding
 					<Typography id='modal-modal-description' sx={{ mt: 2 }}>
-						This application uses cookies, please close this page now if you do not agree to allow the application to set cookies in your browser. All cookies have an expire time of 24 hours and will be removed from your browser upon
-						expiry, should you continue using the application.
+						This application uses cookies. <br /> <br />
+						Close this page now if you do not consent to allow cookies to be stored in the browser.
+						<br />
+						<br /> Cookies will be stored in your browser if you sign in to the application.
+						<br /> <br /> All cookies have an expiry of 24 hours and will be removed from your browser upon expiry or you may delete them manually.
 					</Typography>
 				</Box>
 			</Modal>

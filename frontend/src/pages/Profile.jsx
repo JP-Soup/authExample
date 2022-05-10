@@ -13,9 +13,7 @@ const Profile = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
-	const errorMsg = 'Invalid user credentials';
-
-	const { user, accessToken, isLoading, cookieError, isError, newAccess, secondAuthError, isLoggedIn, message } = useSelector((state) => state.auth);
+	const { user, accessToken, isLoading, isError, newAccess, secondAuthError, isLoggedIn, message } = useSelector((state) => state.auth);
 
 	// If F5 event occurs, set 'window_refresh' item in session storage
 	useEffect(() => {
@@ -42,19 +40,7 @@ const Profile = () => {
 			sessionStorage.removeItem('window_refresh');
 		}
 
-		if (accessToken && isLoggedIn && !user) {
-			const fingerprint = sessionStorage.getItem('fingerprint');
-
-			const authData = {
-				accessToken,
-				fingerprint,
-			};
-
-			// Provide access token for first verfication by routeAuthorization Middleware
-			dispatch(getMe(authData));
-		}
-
-		if (newAccess && accessToken) {
+		if ((accessToken && isLoggedIn && !user) || (accessToken && newAccess)) {
 			const fingerprint = sessionStorage.getItem('fingerprint');
 
 			const authData = {
@@ -66,6 +52,9 @@ const Profile = () => {
 			dispatch(getMe(authData));
 		}
 
+		// Initialize error message
+		const errorMsg = 'Invalid user credentials';
+
 		// If error is returned from first verification of access token, verify refresh token and issue new access token
 		if (isError && message !== errorMsg) {
 			const refreshToken = sessionStorage.getItem('refreshToken');
@@ -76,14 +65,14 @@ const Profile = () => {
 			dispatch(getNewAccessToken(token));
 		}
 
-		//If error message is 'Validation Error' navigate to sign-in page
+		//If error message is 'Invalid user credentials' navigate to sign-in page
 		if (message === errorMsg) {
-			toast.error();
+			toast.error(message);
 			dispatch(logout());
 			navigate('/');
 		}
 
-		// If refresh token verification fails, return error and remove refresh token and fingerprint from session storage and provide an error message to user
+		// If refresh token verification fails, return error and remove refresh token & fingerprint from session storage, then provide an error message to user
 		if (secondAuthError) {
 			toast.error(message);
 			sessionStorage.removeItem('refreshToken');
@@ -91,7 +80,7 @@ const Profile = () => {
 			navigate('/');
 			dispatch(resetSecondAuthError());
 		}
-	}, [newAccess, user, isError, secondAuthError, cookieError, accessToken, isLoggedIn, message, navigate, dispatch]);
+	}, [newAccess, user, isError, secondAuthError, accessToken, isLoggedIn, message, navigate, dispatch]);
 
 	const onNavigateHome = () => {
 		navigate('/home');
@@ -101,7 +90,6 @@ const Profile = () => {
 		navigate('/');
 	};
 
-	//TODO: Is the async/await necessary?
 	const onLogout = async () => {
 		await dispatch(logout());
 		navigate('/');

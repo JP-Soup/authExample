@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authService from './authService.js';
-import { useDispatch, useSelector } from 'react-redux';
 
 const initialState = {
 	user: null,
@@ -10,7 +9,6 @@ const initialState = {
 	isSuccess: false,
 	isError: false,
 	newAccess: false,
-	cookieError: false,
 	secondAuthError: false,
 	message: '',
 };
@@ -69,7 +67,6 @@ export const authSlice = createSlice({
 			state.isSuccess = false;
 			state.isError = false;
 			state.newAccess = false;
-			state.cookieError = false;
 			state.secondAuthError = false;
 			state.message = '';
 		},
@@ -143,6 +140,8 @@ export const authSlice = createSlice({
 				state.accessToken = '';
 				state.isSuccess = false;
 				state.isLoggedIn = false;
+				state.isError = false;
+				state.message = '';
 			});
 	},
 });
